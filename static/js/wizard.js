@@ -66,7 +66,7 @@ define([], function() {
     // Add a page to this view, including an optional view that should
     // be used when the page is not active
     self.add = function(viewOrFactoryForView, viewWhenClosed) {
-      doAdd(viewOrFactoryForView, viewWhenClosed)
+      return doAdd(viewOrFactoryForView, viewWhenClosed);
     }
 
 

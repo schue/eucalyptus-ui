@@ -198,3 +198,8 @@ var testSuite = vows.describe ( 'Wizards' ).addBatch ( {
 } );
 
 module.exports = testSuite;
+if (require.main === module) {
+    testSuite.run ( {}, function () {
+        console.log ( "Done injectorTest" );
+    } );
+}
