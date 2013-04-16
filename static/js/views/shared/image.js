@@ -45,6 +45,7 @@ define([
                 self.image_selected = images.image.get('id');
                 self.model.set(images.image.toJSON());
                 self.model.set('platform', this.setClass(self.model));
+                self.model.set('id', images.image.get('id'));
 
                 //block device maps
                 var maps = images.image.get('block_device_mapping');
