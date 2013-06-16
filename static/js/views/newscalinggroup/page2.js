@@ -7,13 +7,6 @@ define([
         return Backbone.View.extend({
           title: 'Membership', 
 
-          loadBalancers: {
-            name: 'loadBalancers',
-            collection: app.data.loadBalancers,
-            itrLabel: function() {
-              return this.itr.get('name');
-            } 
-          },
 
           initialize: function() {
             $(this.el).html(template)
@@ -30,7 +23,14 @@ define([
                         console.log('VALUE', arguments);
                         return item.get('name');
                     }
-                })
+                }),
+              loadBalancers: {
+                name: 'loadBalancers',
+                collection: app.data.loadBalancers,
+                itrLabel: function() {
+                  return this.itr.get('name');
+                } 
+              },
             });
             this.rview = rivets.bind(this.$el, scope);
 

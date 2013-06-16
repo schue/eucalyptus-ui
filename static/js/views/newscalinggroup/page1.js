@@ -14,7 +14,7 @@ define([
             name: 'launchConfig',
             collection: dh.launchConfigs,
             itrLabel: function() {
-                return this.itr.get('name');
+                return this.get('itr').get('name');
             }
        });
 

@@ -14,6 +14,9 @@ var diveIntoObject = function(obj, keypath, callback) {
     if (!keypath) {
         return callback(obj, null);
     }
+    if (obj instanceof Node) {
+        return callback(obj, keypath);
+    }
     //return callback(obj, keypath);
     var keyparts = keypath.replace(/^:/, '').split(/\./);
     //console.log('diveIntoObject(keyparts):', obj, keyparts);
@@ -28,19 +31,88 @@ var diveIntoObject = function(obj, keypath, callback) {
     //console.log('callback:', obj, keyparts[0]);
     return callback(obj, keyparts.shift());
 };
+
+var modelClass, collectionClass;
+modelClass = Backbone.Model.extend({
+    parse: function(response) {
+        var result = {};
+        for (var key in response) {
+            var oldValue = response[key];
+            //console.log('key:', key, typeof oldValue, oldValue instanceof Array);
+            result[key] = parseOne(oldValue);
+        }
+        return result;
+    },
+    set: function(key, val, options) {
+        var attr, attrs, curVal, merge, nestedOptions, newVal;
+        if (key == null) return this;
+
+        if (typeof key === 'object') {
+            attrs = key;
+            options = val;
+        } else {
+            (attrs = {})[key] = val;
+        }
+        if (options && options.merge) {
+            nestedOptions = {silent: false, merge: true};
+            for (attr in attrs) {
+                curVal = this.get(attr);
+                newVal = attrs[attr];
+                if (curVal instanceof modelClass && newVal instanceof modelClass)  {
+                    delete attrs[attr];
+                    curVal.set(newVal.attributes, nestedOptions);
+                }
+            }
+        }
+        return modelClass.__super__.set.call(this, attrs, options);
+    }
+});
+
+collectionClass = Backbone.Collection.extend({
+    model: modelClass
+});
+
+var parseOne = function(oldValue) {
+    if (oldValue == null) {
+    } else if (typeof oldValue == 'string') {
+    } else if (oldValue instanceof Date) {
+    } else if (oldValue instanceof Number) {
+    } else if (oldValue instanceof Function) {
+    } else if (oldValue instanceof Backbone.Model) {
+    } else if (oldValue instanceof Backbone.Collection) {
+    } else if (oldValue instanceof modelClass) {
+    } else if (oldValue instanceof collectionClass) {
+    } else if (oldValue instanceof Array) {
+        var newValue = new collectionClass();
+        for (var i = 0; i < oldValue.length; i++) {
+            var r = parseOne(oldValue[i]);
+            newValue.add(r);
+        }
+        return newValue;
+    } else if (typeof oldValue == 'object') {
+        return new modelClass(oldValue, {parse: true});
+    } else {
+    }
+    return oldValue;
+};
+
 rivets.configure({
     adapter: {
         parsingSupport: true,
+        convertToModel: function(data) {
+            return parseOne(data);
+        },
         iterate: function(obj, callback) {
+            //console.log('iterate:', obj, callback);
             if (obj instanceof Backbone.Collection) {
                 var l = obj.length;
                 for (var i = 0; i < l; i++) {
                     callback(obj.at(i), i);
                 }
             } else if (obj instanceof Backbone.Model) {
-                var jobj = obj.toJSON();
-                for (var i in jobj) {
-                    callback(obj.get(i), i);
+                var keys = obj.keys();
+                for (var i = 0; i < keys.length; i++) {
+                    callback(obj.get(keys[i]), keys[i]);
                 }
             } else if (obj instanceof Array) {
                 for (var i = 0; i < obj.length; i++) {
@@ -52,47 +124,92 @@ rivets.configure({
                 }
             }
         },
-	    subscribe: function(obj, keypath, callback) {
- //           console.log('subscribe', keypath);
-            return diveIntoObject(obj, keypath, function(obj, keypath) {
+        subscribe: function(obj, keypath, callback) {
+            //console.log('adapter subscribe', arguments);
+            diveIntoObject(obj, keypath, function(obj, id) {
                 if (obj instanceof Backbone.Model) {
-                    obj.on('change:' + keypath, callback);
+                    var proxyData;
+                    function checkValue() {
+                        var value = doObjectRead(obj, id);
+                        var lastValue = proxyData.lastValue;
+                        if (lastValue && (value == null || value !== lastValue)) {
+                            proxyData.lastValue.off('sync reset change', subCallback);
+                            lastValue = proxyData.lastValue = null;
+                        }
+                        if (lastValue == null && value) {
+                            var message;
+                            if (value instanceof Backbone.Collection) {
+                                message = 'sub collection';
+                            } else if (value instanceof Backbone.Model) {
+                                message = 'sub model';
+                            }
+                            if (message) {
+                                proxyData.lastValue = value;
+                                value.on('sync reset change', subCallback);
+                            }
+                        }
+                    }
+                    function proxyCallback() {
+                        console.log('proxy callback', obj, keypath);
+                        checkValue();
+                        callback();
+                    }
+                    function subCallback() {
+                        console.log('sub callback', obj, keypath);
+                        callback();
+                    };
+                    callback._proxyData = proxyData = {proxyCallback: proxyCallback, subCallback: subCallback};
+                    checkValue();
+                    obj.on('change:' + id, proxyCallback);
                 } else if (obj instanceof Backbone.Collection) {
-                    obj.on('sync add remove reset change', callback);
+                    obj.on('sync reset change', callback);
+                } else if (obj instanceof Node) {
+                    if (keypath == 'destroyed') {
+                        jQuery(obj).on('destroyed', callback)
+                    }
                 } else {
-                    // No easy portable way to observe plain objects.
-                    // console.log('plain object');
+                    //console.log('plain object');
                 }
             });
         },
         unsubscribe: function(obj, keypath, callback) {
-//            console.log('unsubscribe', keypath);
-            diveIntoObject(obj, keypath, function(obj, keypath) {
+            //console.log('unsubscribe:', arguments);
+            diveIntoObject(obj, keypath, function(obj, id) {
                 if (obj instanceof Backbone.Model)  {
-                 //   console.log('unsubscribe ', keypath, callback);
-                    obj.off('change:' + keypath, callback);
+                    var proxyData = callback._proxyData;
+                    obj.off('change:' + keypath, proxyData.proxyCallback);
+                    if (proxyData.lastValue) {
+                        proxyData.lastValue.off('sync reset change', proxyData.subCallback);
+                        proxyData.lastValue = null;
+                    }
                 } else if (obj instanceof Backbone.Collection) {
-                    obj.off('sync add remove reset change', callback);
+                    obj.off('sync reset change', callback);
+                } else if (obj instanceof Node) {
+                    if (keypath == 'destroyed') {
+                        jQuery(obj).off('destroyed', callback)
+                    }
                 } else {
-                    // No easy portable way to observe plain objects.
-                    // console.log('plain object');
+                    //console.log('plain object');
                 }
             });
         },
         read: function(obj, keypath) {
-            if (obj == null) return null;
-            if (typeof keypath === 'undefined') return obj;
-
-            return diveIntoObject(obj, keypath, doObjectRead);
+            //console.log('read:', obj, keypath);
+            if (typeof keypath === 'undefined' || keypath === '') return obj;
+            var r = diveIntoObject(obj, keypath, doObjectRead);
+            //console.log('r=', r);
+            return r;
         },
         publish: function(obj, keypath, value) {
-            diveIntoObject(obj, keypath, function(obj, keypath) {
+            //console.log('publish:', obj, keypath);
+            diveIntoObject(obj, keypath, function(obj, id) {
+                value = parseOne(value);
                 if (obj instanceof Backbone.Model)  {
-                    obj.set(keypath, value);
+                    obj.set(id, value);
                 } else if (obj instanceof Backbone.Collection) {
-                    obj.at(keypath).set(value);
+                    obj.set(value, {at: id});
                 } else {
-                    obj[keypath] = value;
+                    obj[id] = value;
                 }
             });
         }
