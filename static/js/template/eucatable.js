@@ -104,8 +104,13 @@
                 valueMatches : thisObj.searchConfig.valueMatches
             }
         });
-        thisObj.bbdata.on('change add remove reset', function() {
-          thisObj.refreshTable.call(thisObj)
+        var doRefresh = _.debounce(function() {
+           console.log('REFRESH');
+           thisObj.refreshTable(); 
+        }, 100);
+        thisObj.bbdata.on('add remove change reset sync', function() {
+           console.log('CHANGE TRIGGERED');
+           doRefresh();
         });
         if(thisObj.options.filters){
           $.each(thisObj.options.filters, function(idx, filter){

@@ -173,12 +173,19 @@ define(['app'], function(app) {
       var result = false;
       switch (typeof obj) {
         case 'string' :
+          console.log('string match');
           result = rex.test(obj);
           break;
         case 'number' :
+          console.log('number match');
           result = rex.test('' + obj)
           break;
         case 'object' :
+          console.log('object match');
+          // If this is a Backbone object, flatten it out
+          if (obj instanceof Backbone.Model || obj instanceof Backbone.Collection) {
+              obj = obj.toJSON();
+          }
           if (isArray(obj)) {
             for (var i = 0; i < obj.length; i++) {
               result = drillThrough(obj[i], rex, depth + 1);
