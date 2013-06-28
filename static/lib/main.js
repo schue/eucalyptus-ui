@@ -17,6 +17,8 @@ require.config({
         'text' : '../lib/text',
         'order' : '../lib/order',
         'domReady' : '../lib/domReady',
+        'vncutil' : '../lib/novnc/util',
+        'vnc' : '../lib/novnc/ui',
         },
         shim: {
                 underscore : {
@@ -37,9 +39,16 @@ require.config({
                 	exports: 'rivets',
                 },
                 rivets : {
-                        deps: ['rivetsbase'],
-                        exports: 'rivets'
+                    deps: ['rivetsbase'],
+                    exports: 'rivets'
                 },
+                vncutil : {
+                    exports: 'Util'
+                },
+                vnc: {
+                    deps: ['vncutil'],
+                    exports: 'UI'
+                }
 	}
 });
 

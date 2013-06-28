@@ -773,7 +773,6 @@
       if ( instances.length > 0 ) {
         // connect is for one instance 
         var instance = instances[0];
-//        instance = $(instance).html();   // After dataTable 1.9 integration, this operation is no longer needed. 030413
         var os = oss[0]; 
 
         // XSS Note: Need to encode the input strings before rendered as HTML
@@ -781,46 +780,13 @@
         ip = DefaultEncoder().encodeForHTML(ip[0]);
         group = DefaultEncoder().encodeForHTML(group[0]);
 
-        if(os === 'windows'){ 
-          thisObj.connectDialog.eucadialog('addNote','instance-connect-text',$.i18n.prop('instance_dialog_connect_windows_text', group, keyname));
-          thisObj.connectDialog.eucadialog('addNote','instance-connect-uname-password', 
-            ' <table> <thead> <tr> <th> <span>'+instance_dialog_connect_username+'</span> </th> <th> <span>'+instance_dialog_connect_password+'</span> </th> </tr> </thead> <tbody> <tr> <td> <span>'+ip+'\\Administrator </span></td> <td> <span> <a id="password-link" href="#">'+$.i18n.prop('instance_dialog_connect_getpassword', keyname)+'</a></span></td> </tr> </tbody> </table>');
-          if (!thisObj.instPassword[instance]){
-            var $fileSelector = thisObj.connectDialog.find('input#fileupload');
-            $fileSelector.fileupload( {
-              dataType: 'json',
-              url: "../ec2",
-              formData: [{name: 'Action', value: 'GetPassword'}, {name:'InstanceId', value:instance}, {name:'_xsrf', value:$.cookie('_xsrf')}],  
-              done: function (e, data) {
-                $.each(data.result, function (index, result) {
-                  thisObj.instPassword[result.instance] = result.password;
-                  var parent = thisObj.connectDialog.find('a#password-link').parent();
-                  parent.find('a').remove();
-                  parent.html(DefaultEncoder().encodeForHTML(result.password));
-                  thisObj.connectDialog.find('a').unbind('click');
-                });
-              },
-              fail : function (e, data) {
-                var parent = thisObj.connectDialog.find('a#password-link').parent();
-   //             parent.html('<span class="on-error">'+instance_dialog_password_error+'</span>');
-                parent.append($('<span>').addClass('on-error').text(instance_dialog_password_error));
-		thisObj.connectDialog.find('a').unbind('click');
-              },
-            });
-            thisObj.connectDialog.find('a').click( function(e) {
-              $fileSelector.trigger('click'); 
-            });
-          }else {
-            var parent = thisObj.connectDialog.find('a#password-link').parent();
-            parent.find('a').remove();
-            parent.html(DefaultEncoder().encodeForHTML(thisObj.instPassword[instance]));
-            thisObj.connectDialog.find('a').unbind('click');
-          }
-        }
-        else{
-          thisObj.connectDialog.eucadialog('addNote','instance-connect-text',$.i18n.prop('instance_dialog_connect_linux_text', group, keyname, ip));
-        }
-        thisObj.connectDialog.eucadialog('open');
+        require(['app'], function(app) {
+            if(os === 'windows'){ 
+                app.dialog('connect', {});
+            } else {
+                app.dialog('connect', {});
+            }
+        });
        }
     },
     _consoleAction : function() {
