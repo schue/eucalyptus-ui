@@ -288,6 +288,30 @@ rivets.binders['switch-*-default'] = {
         }
 };
 
+rivets.binders['node'] = {
+	block: true,
+	bind: function(el) {
+		attrName = this.attrName = ['data', rivets.config.prefix, this.type].join('-').replace('--', '-');
+		this.attrValue = el.getAttribute(attrName);
+		el.removeAttribute(attrName);
+	},
+	unbind: function(el) {
+		var subView = this.subView;
+		if (subView) {
+			subView.unbind();
+			delete this.subView;
+		}
+		el.setAttribute(this.attrName, this.attrValue);
+	},
+	routine: function(el, value) {
+		var subView = this.subView;
+		if (subView) {
+			subView.unbind();
+		}
+		$(el).empty().append(value);
+		this.subView = rivets.bind(el, this.model);
+	}
+};
 rivets.binders['view-*-*'] = rivets.binders['view-*'] = {
 	block: true,
 	bind: function(el) {
