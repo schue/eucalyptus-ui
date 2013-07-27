@@ -30,6 +30,9 @@ define([
 			wizardLoader.createStep({name: 'payment', class: 'wizard-step payment-step', label: 'Payment Method', parts: ['body']}, stepDoneLoading);
 			wizardLoader.createStep({name: 'placeorder', class: 'wizard-step placeorder-step', label: 'Place Order', parts: ['body']}, stepDoneLoading);
 			wizardLoader.run(function(wizard, html) {
+				wizard.on('updated-step', function(oldStep, newStep) {
+					WizardView.flashPane(self.$el);
+				});
 				var scope = new Backbone.Model({
 					wizard: wizard,
 					creditCard: creditCard
