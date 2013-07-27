@@ -288,6 +288,46 @@ rivets.binders['switch-*-default'] = {
         }
 };
 
+rivets.binders['with-*'] = {
+	block: true,
+	bind: function(el) {
+		var attrName = 'data-with-' + this.args[0];
+		this.origAttribute = el.getAttribute(attrName);
+		el.removeAttribute(attrName);
+	},
+	unbind: function(el) {
+		var subView = this.subView;
+		if (subView) {
+			subView.unbind();
+			delete this.subView;
+		}
+		el.setAttribute('data-with-' + this.args[0], this.origAttribute);
+		delete this.origAttribute;
+	},
+	routine: function(el, value) {
+		var subView = this.subView;
+		if (subView) {
+			subView.unbind();
+		}
+		var subModel = this.view.models.clone();
+		subModel.set(this.args[0], value);
+		this.subView = rivets.bind(el, subModel);
+	}
+};
+rivets.binders['class'] = function(el, value) {
+	if (value) {
+		el.className = value;
+	} else {
+		el.className = '';
+	}
+	var bindings = this.view.bindings;
+	for (var i = 0; i < bindings.length; i++) {
+		var binding = bindings[i];
+		if (binding.el == el && binding != this) {
+			binding.sync();
+		}
+	}
+};
 rivets.binders['node'] = {
 	block: true,
 	bind: function(el) {
