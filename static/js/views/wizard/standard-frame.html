@@ -1,0 +1,81 @@
+<div class="widget-wizard ui-widget-content ui-tabs">
+ <!--
+ <div class="widget-wizard-currentStep" data-with-step="wizard.currentStep" data-text="step.name"></div>
+ -->
+
+ <!-- intro -->
+ <div class="widget-wizard-intro">
+  <div class="widget-wizard-intro-global" data-show="html.intro" data-node="html.intro">[intro]</div>
+  <div data-switch-status="wizard.serverResult.resultStatus < wizard.serverResult">
+   <div data-switch-status-case="error" data-switch-status-default="">
+    <div data-each-step="wizard.steps" data-show="step.isCurrent">
+     <div class="widget-wizard-intro-step" data-show="step.intro" data-node="step.intro">[step intro]</div>
+    </div>
+   </div>
+   <div data-switch-status-case="success">
+   </div>
+  </div>
+ </div>
+
+ <div data-switch-status="wizard.serverResult.resultStatus < wizard.serverResult">
+  <div class="widget-wizard-success" data-switch-status-case="success" data-node="html.success">
+   [success 2]
+  </div>
+  <div data-switch-status-case="error" data-switch-status-default="">
+   <!-- breadcrumbs and actions -->
+   <div class="widget-wizard-header">
+    <ul class="widget-wizard-breadcrumbs ui-tabs-nav ui-helper-reset ui-helper-clearfix ui-widget-header ui-corner-all">
+     <li data-each-step="wizard.steps" data-hide="step.isHidden" data-class="ui-state-default ui-corner-top {{step.class}}" data-class-ui-state-active="step.isCurrent" data-class-wizard-step-active="step.isActive" data-class-has-errors="step.hasErrors" data-on-click="step"><span data-html="step.label"></span></li>
+    </ul>
+    <div class="widget-wizard-topactions">
+     <button class="button prev-button" data-with-action="wizard.actions.prev" data-show="action.isActive" data-on-click="action" type="submit">
+      <span data-text="action.name">[prev]</span>
+     </button>
+     <button class="button next-button" data-with-action="wizard.actions.next" data-show="action.isActive" data-on-click="action" type="submit">
+      <span data-text="action.name">[next]</span>
+     </button>
+     <!--
+     <button class="button save-button" data-with-action="actions.save" data-show="action.isActive" data-on-click="action" type="submit">
+      <span>save</span>
+     </button>
+     -->
+    </div>
+   </div>
+
+   <!-- main body -->
+   <div class="widget-wizard-content">
+    <div data-each-step="wizard.steps" data-show="step.isCurrent">
+     <div class="widget-wizard-instructions-step" data-show="step.instructions" data-node="step.instructions">[step instructions]</div>
+    </div>
+    <div class="widget-wizard-message" data-show="wizard.message" data-html="wizard.message">[message]</div>
+    <div class="widget-wizard-server-result">
+     <div data-switch-status="wizard.serverResult.resultStatus < wizard.serverResult">
+      <div class="error" data-switch-status-case="error" data-html="wizard.serverResult.errorMessage < wizard.serverResult">
+       error
+      </div>
+     </div>
+    </div>
+    <div data-each-step="wizard.steps" data-show="step.isCurrent">
+     <div class="widget-wizard-body-step" data-show="step.body"><div data-text="step.name"></div><div data-node="step.body">[step body]</div></div>
+    </div>
+   </div>
+
+   <!-- footer -->
+   <div class="widget-wizard-footer">
+    <div class="widget-wizard-bottomactions">
+     <!--
+     <button class="button prev-button" data-with-action="wizard.actions.prev" data-show="action.isActive" data-on-click="action" type="submit">
+      <span data-text="action.name"></span>
+     </button>
+     <button class="button next-button" data-with-action="wizard.actions.next" data-show="action.isActive" data-on-click="action" type="submit">
+      <span data-text="action.name"></span>
+     </button>
+     <button class="button save-button" data-with-action="actions.save" data-show="action.isActive" data-on-click="action" type="submit">
+      <span>save</span>
+     </button>
+     -->
+    </div>
+   </div>
+  </div>
+ </div>
+</div>

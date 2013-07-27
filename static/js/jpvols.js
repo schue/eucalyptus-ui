@@ -49,3 +49,35 @@
   });
 })
 (jQuery, window.eucalyptus ? window.eucalyptus : window.eucalyptus = {});
+
+(function($, eucalyptus) {
+  $.widget('eucalyptus.arh_wizard', $.eucalyptus.eucawidget, {
+    options : { },
+    _init : function() {
+      var thisObj = this;
+      require(['views/ArhWizardTest'], function(View) {
+        var view = new View({el: thisObj.element});
+	view.render();
+      });
+    },
+
+    _create : function() { 
+    },
+
+    _destroy : function() {
+    },
+
+    _expandCallback : function(row){ 
+       var $wrapper = $('<div>Test row</div>');
+      return $wrapper;
+    },
+
+/**** Public Methods ****/
+    close: function() {
+      cancelRepeat(tableRefreshCallback);
+      this._super('close');
+    },
+/**** End of Public Methods ****/
+  });
+})
+(jQuery, window.eucalyptus ? window.eucalyptus : window.eucalyptus = {});

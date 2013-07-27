@@ -60,6 +60,7 @@
 
     function Binding(el, type, model, keypath, options) {
       this.el = el;
+      this.elParentNode = el.parentNode;
       this.type = type;
       this.model = model;
       this.keypath = keypath;
@@ -123,6 +124,9 @@
       keypath = this.keypath;
       model = this.model;
       this.set(this.options.bypass ? model[keypath] : getAdapter().read(model, keypath));
+      if (this.view) {
+        this.view.childSynced(this);
+      }
     };
 
     Binding.prototype.publish = function() {
@@ -237,7 +241,7 @@
         if (matches[1]) {
           values.push(matches[1]);
         }
-        subs.push(subBinding = defaultExpressionParser(view, null, '*', models, matches[2]));
+        subs.push(subBinding = defaultExpressionParser(view, node, '*', models, matches[2]));
         subBinding.binder = createSubExpressionBinder(binding, values, values.length);
       }
       if (value) {
@@ -380,6 +384,28 @@
         _map(el.getElementsByTagName('*'), parse);
       });
     }
+
+    View.prototype.childSynced = function(childBinding) {
+      var parentNodes, foundParent, foundBinding;
+        parentNodes = [];
+        var parentNode = childBinding.elParentNode;
+        while (parentNode) {
+          parentNodes.push(parentNode);
+          parentNode = parentNode.parentNode;
+        }
+        foundParent = parentNodes.length;
+        _map(this.bindings, function(binding) {
+          var i;
+          i = __indexOf.call(parentNodes, binding.el);
+          if (i != -1 && i < foundParent) {
+            foundParent = i;
+            foundBinding = binding;
+          }
+        });
+        if (foundBinding) {
+          foundBinding.sync();
+        }
+    };
 
     View.prototype.bindingRegExp = function() {
       var prefix;
@@ -568,6 +594,15 @@
     },
     "each-*": {
       block: true,
+      unbind: function(el) {
+        _map(this.iterated, function(view) {
+          view.unbind();
+          _map(view.els, function(e) {
+            e.parentNode.removeChild(e);
+          });
+        });
+        delete this.iterated;
+      },
       routine: function(el, collection) {
         var iterated, marker, parentNode, previous,
           _this = this;

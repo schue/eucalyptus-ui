@@ -181,6 +181,9 @@
         case 'eantest':
           this.element.eantest();
           break;
+	      case 'arh_wizard':
+	        this.element.arh_wizard();
+		break;
 	      case 'jp_volume':
 	        this.element.jpvols();
           break;

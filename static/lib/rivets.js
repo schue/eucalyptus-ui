@@ -88,7 +88,7 @@ rivets.configure({
         publish: function(obj, keypath, value) {
             diveIntoObject(obj, keypath, function(obj, keypath) {
                 if (obj instanceof Backbone.Model)  {
-                    obj.set(keypath, value);
+                    obj.set(keypath, value, {forceUpdate: true});
                 } else if (obj instanceof Backbone.Collection) {
                     obj.at(keypath).set(value);
                 } else {
@@ -287,3 +287,47 @@ rivets.binders['switch-*-default'] = {
         routine: function(el, value) {
         }
 };
+
+rivets.binders['view-*-*'] = rivets.binders['view-*'] = {
+	block: true,
+	bind: function(el) {
+		var path = 'views/' + this.args[0] + '/index';
+		console.log('ui-view:bind', path, arguments);
+		var binding = this;
+		delete binding.uiView;
+		$(this.el).addClass('ui-loading');
+		require([path], function(uiViewClass) {
+			//console.log('ui-view:loaded', arguments);
+			$(binding.el).removeClass('ui-loading');
+			if ('uiView' in binding) {
+				// do nothing, already been unbound
+			} else {
+				var viewBindingArgs = binding.args.slice();
+				viewBindingArgs.shift();
+				binding.uiView = new uiViewClass({el: el, parentModel: binding.view.models, viewModel: binding.model, keypath: binding.keypath, args: viewBindingArgs});
+				if ('lastValue' in binding) {
+					var lastValue = binding.lastValue;
+					delete binding.lastValue;
+					binding.uiView.routine(lastValue);
+				}
+			}
+		});
+	},
+	unbind: function(el) {
+		console.log('ui-view:unbind', arguments);
+		if (this.uiView) {
+			this.uiView.unbind();
+		}
+		this.uiView == null;
+	},
+	routine: function(el, value) {
+		console.log('ui-view:routine', arguments);
+		if (this.uiView) {
+			this.uiView.routine(value);
+		} else {
+			this.lastValue = value;
+		}
+	}
+};
+
+

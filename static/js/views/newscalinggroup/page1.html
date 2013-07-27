@@ -3,23 +3,24 @@
     <div class="launch-wizard-type-main-contents">
 
         <div class="launch-wizard-type-option">
-            
+           <!-- 
             <div class="form-row clearfix">
                 <label class="required-label" for="scalingGroupName" data-msg="create_scaling_group_general_name">Name</label>
                 <input type="text" name="name" id="scalingGroupName" data-value="scalingGroup.name" data-tooltip="create_scaling_group_general_name_tip" data-on-keydown="change" data-on-blur="change"></input>
                 <div class="field-error" data-text="scalingGroupErrors.name"></div>
             </div>
-
+-->
             <div class="form-row clearfix">
-                <label class="required-label" data-msg="create_scaling_group_general_launch_config" data-tooltip="create_scaling_group_general_launch_config_tip">Launch Configuration</label>
+             <div data-text="scalingGroup.launch_config_name">[launch config name]</div>
+                <label class="required-label" -data-msg="create_scaling_group_general_launch_config" -data-tooltip="create_scaling_group_general_launch_config_tip">Launch Configuration</label>
                 <select data-show="scalingGroup.show_lc_selector" id="launchConfig" data-value="scalingGroup.launch_config_name">
                     <option value="" disabled selected>--</option>
-                    <option data-each-item="launchConfigs" data-text="item.name"></option>
+                    <option data-each-item="launchConfigs" data-value="item.name" data-text="item.name"></option>
                 </select>
-                <span data-hide="scalingGroup.show_lc_selector" data-text="scalingGroup.launch_config_name"></span>
-                <div class="field-error" data-text="scalingGroupErrors.launch_config_name"></div>
+                <span -data-hide="scalingGroup.show_lc_selector" -data-text="scalingGroup.launch_config_name"></span>
+                <div class="field-error" -data-text="scalingGroupErrors.launch_config_name"></div>
             </div>
-
+<!--
             <div class="scaling-group-instances">
                 <div class="wizard-section-label" data-msg="create_scaling_group_general_instances">Instances</div>
 
@@ -42,7 +43,7 @@
                 </div>
                 <div class="scaling_group_thermometer"><img src="images/thermometer.png"></div>
             </div>
-
+            -->
         </div>
     </div>
 </div>
