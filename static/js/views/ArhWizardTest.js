@@ -13,6 +13,7 @@ define([
 			function stepDoneLoading(stepData) {
 				switch (stepData.name) {
 					case 'payment':
+						// this will call action-false if true is returned.
 						stepData.sticky = function(wizard, step) {
 							//checkStepForErrors(step);
 							return !creditCard.isValid(true);
@@ -30,8 +31,11 @@ define([
 			wizardLoader.createStep({name: 'payment', class: 'wizard-step payment-step', label: 'Payment Method', parts: ['body']}, stepDoneLoading);
 			wizardLoader.createStep({name: 'placeorder', class: 'wizard-step placeorder-step', label: 'Place Order', parts: ['body']}, stepDoneLoading);
 			wizardLoader.run(function(wizard, html) {
-				wizard.on('updated-step', function(oldStep, newStep) {
+				wizard.on('action-false', function(oldStep, newStep) {
 					WizardView.flashPane(self.$el);
+				});
+				wizard.on('updated-step', function(oldStep, newStep) {
+					// check state of newStep, auto-focus invalid fields
 				});
 				var scope = new Backbone.Model({
 					wizard: wizard,
