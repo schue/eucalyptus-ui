@@ -226,6 +226,7 @@
     if (expressionRegex.test(value)) {
     //function Binding(el, type, model, keypath, options) {
       binding = new Binding(node, type, models);
+      binding.view = view;
       values = [];
       subs = [];
       binding.options.destroyedHandler = function(child) {
