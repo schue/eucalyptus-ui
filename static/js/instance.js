@@ -539,7 +539,7 @@
     // TODO: should be auto-reloaded
     _mapVolumeState : function() {
       var thisObj = this;
-      var results = describe('volume');
+      var results = eucadescribe('volume');
       $.each(results, function(idx, volume){
         if (volume.attach_data && volume.attach_data['status']){
           var inst = volume.attach_data['instance_id'].toLowerCase();
@@ -556,7 +556,7 @@
     // TODO: should be auto-reloaded
     _mapIp : function() {
       var thisObj = this;
-      var results = describe('eip');
+      var results = eucadescribe('eip');
       $.each(results, function(idx, addr){
         if (addr['instance_id'] && addr['instance_id'].length > 0){
           var instId = addr['instance_id'];
@@ -872,7 +872,7 @@
 
     _initDetachDialog : function(dfd) {  // should resolve dfd object
       var thisObj = this;
-      var results = describe('volume');
+      var results = eucadescribe('volume');
       var instance = this.tableWrapper.eucatable('getSelectedRows', 17)[0];
 
       // FIX TO DISPLAY THE NAME TAG OF THE INSTANCE --- Kyo 041513
@@ -1023,7 +1023,7 @@
     _disassociateAction : function(){
       var thisObj = this;
       var ips = thisObj.tableWrapper.eucatable('getSelectedRows', 16);
-      var results = describe('eip');
+      var results = eucadescribe('eip');
       var addrs = [];
       _.each(ips, function(ip){
         for(i in results){
@@ -1064,7 +1064,7 @@
       var id = this.tableWrapper.eucatable('getSelectedRows', 17)[0];
 //      id = $(id).html();    // After dataTable 1.9 integration, this operaiton is no longer needed. 030413
       var filter = {};
-      var result = describe('instance');
+      var result = eucadescribe('instance');
       var instance = null;
       for( i in result){
         var inst = result[i];
@@ -1196,7 +1196,7 @@
       });
 
       var filter = {};
-      var result = describe('instance');
+      var result = eucadescribe('instance');
       var instance = null;
       for( i in result){
         var inst = result[i];
@@ -1207,7 +1207,7 @@
       }
       if (!instance)
         return;
-      result = describe('image');
+      result = eucadescribe('image');
       var image = null;
       for (i in result){
         if(instance.image_id === result[i].id){
@@ -1268,7 +1268,7 @@
         $sg.append($('<div>').text(launch_instance_summary_sg), $('<span>').text(selectedSg));
       else{
         var groupList = [];
-        var result = describe('sgroup');
+        var result = eucadescribe('sgroup');
         for (i in result){
           groupList.push(result[i].name);
         }

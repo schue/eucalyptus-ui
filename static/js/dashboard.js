@@ -49,7 +49,7 @@
       var $az=$instObj.find('#dashboard-instance-az select');
 
       $('html body').eucadata('addCallback', 'zone', 'dashboard-summary', function(){
-         var results = describe('zone');
+         var results = eucadescribe('zone');
          var arrayAz = [];
          for( res in results) {
               var azName = results[res].name;
@@ -209,7 +209,7 @@
 
         var az=$instObj.find('#dashboard-instance-az select').val();
 
-        var results = describe('summary')[0];
+        var results = eucadescribe('summary')[0];
         inst_running_count = results.inst_running;
 	    inst_stopped_count = results.inst_stopped;
 

@@ -80,7 +80,7 @@
                },
               "mData": function(source){
                  var groupName = source.name;
-                 var results = describe('sgroup');
+                 var results = eucadescribe('sgroup');
                  var group = null;
                  for(i in results){
                    if (results[i].name === groupName){
@@ -114,7 +114,7 @@
                },
               "mData": function(source){
                  var groupName = source.name;
-                 var results = describe('sgroup');
+                 var results = eucadescribe('sgroup');
                  var group = null;
                  for(i in results){
                    if (results[i].name === groupName){
@@ -143,7 +143,7 @@
                },
               "mData" : function(source){
                  var groupName = source.name;
-                 var results = describe('sgroup');
+                 var results = eucadescribe('sgroup');
                  var group = null;
                  for(i in results){
                    if (results[i].name === groupName){
@@ -1007,7 +1007,7 @@
       gAddDialog = thisObj.addDialog;
 
       group_ids = [];
-      var results = describe('sgroup');
+      var results = eucadescribe('sgroup');
       if ( results ) {
         for( res in results) {
           var group = results[res];
@@ -1046,7 +1046,7 @@
       thisObj._refreshRulesList(thisObj.editDialog);
       // set autocomplete based on list containing groups other than current group
       group_ids = [];
-      var results = describe('sgroup');
+      var results = eucadescribe('sgroup');
       if ( results ) {
         for( res in results) {
           var group = results[res];

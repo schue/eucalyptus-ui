@@ -161,7 +161,7 @@
               "bVisible": false,
               "aTargets":[13],
               "mData": function(source){
-                var results = describe('sgroup');
+                var results = eucadescribe('sgroup');
                 var group = null;
                 for(i in results){
                   if(results[i].name === 'default'){

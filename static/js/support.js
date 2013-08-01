@@ -201,7 +201,7 @@ function clearRepeat() {
 }
 //////////////////////////////////////////////////////////////
  
-function describe(resource, resourceId){
+function eucadescribe(resource, resourceId){
   var result= $('html body').eucadata('get', resource);
   //result = $.parseJSON(result);
   if(!resourceId)
@@ -384,7 +384,7 @@ function getErrorMessage(jqXHR) {
 }
 
 function isRootVolume(instanceId, volumeId) {
-  var instance = describe('instance', instanceId);
+  var instance = eucadescribe('instance', instanceId);
   if ( instance && instance.root_device_type && instance.root_device_type.toLowerCase() == 'ebs' ) {
     var rootDeviceName = getRootDeviceName(instance);
     var rootVolume = instance.block_device_mapping[rootDeviceName];
@@ -400,7 +400,7 @@ function getRootDeviceName(resource){
 }
 
 function generateSnapshotToImageMap(){
-  var images = describe('image');
+  var images = eucadescribe('image');
   var snapToImageMap = {}
   $.each(images, function(idx, image){
     if(image.block_device_mapping){
