@@ -1,5 +1,5 @@
 define(['app', 'models/scalinggrp'], function(app, ScalingGroup) {
-    return describe('CreateAlarm :: Initial create alarm test', function() {
+    return describe('CreateAlarm :: main', function() {
         var ALARM_NAME = '__TEST_ALARM__';
         var fetchWorker;
         var alarm;
@@ -29,46 +29,48 @@ define(['app', 'models/scalinggrp'], function(app, ScalingGroup) {
             });
         });
 
-        it('should see the alarm come back', function() {
-            runs(function() {
-                fetchWorker = setInterval(function() {
-                    console.log('Check for alarm');
-                    app.data.alarms.fetch();
-                }, 2000);
+        describe('CreateAlarm :: check values', function() {
+            it('should see the alarm come back', function() {
+                runs(function() {
+                    fetchWorker = setInterval(function() {
+                        console.log('Check for alarm');
+                        app.data.alarms.fetch();
+                    }, 2000);
+                });
+
+                waitsFor(function() {
+                    return app.data.alarms.findWhere({name: ALARM_NAME}) != null;
+                }, 'An alarm should be created', 60000);
+                
+                runs(function() {
+                    clearInterval(fetchWorker);
+                    alarm = app.data.alarms.findWhere({name: ALARM_NAME});
+                });
             });
 
-            waitsFor(function() {
-                return app.data.alarms.findWhere({name: ALARM_NAME}) != null;
-            }, 'An alarm should be created', 60000);
-            
-            runs(function() {
-                clearInterval(fetchWorker);
-                alarm = app.data.alarms.findWhere({name: ALARM_NAME});
+            it('should have a matching namespace', function() {
+                expect(alarm.get('namespace')).toBe('AWS/AutoScaling');
             });
-        });
 
-        it('should have a matching namespace', function() {
-            expect(alarm.get('namespace')).toBe('AWS/AutoScaling');
-        });
+            it('should have a matching metric', function() {
+                expect(alarm.get('metric')).toBe('GroupDesiredCapacity');
+            });
 
-        it('should have a matching metric', function() {
-            expect(alarm.get('metric')).toBe('GroupDesiredCapacity');
-        });
+            it('should have a matching comparison', function() {
+                expect(alarm.get('comparison')).toBe('>');
+            });
 
-        it('should have a matching comparison', function() {
-            expect(alarm.get('comparison')).toBe('>');
-        });
+            it('should have a matching evaluation period', function() {
+                expect(alarm.get('evaluation_periods')).toBe(2);
+            });
 
-        it('should have a matching evaluation period', function() {
-            expect(alarm.get('evaluation_periods')).toBe(2);
-        });
+            it('should have a matching period', function() {
+                expect(alarm.get('period')).toBe(60);
+            });
 
-        it('should have a matching period', function() {
-            expect(alarm.get('period')).toBe(60);
-        });
-
-        it('should have a matching threshold', function() {
-            expect(alarm.get('threshold')).toBe(10);
+            it('should have a matching threshold', function() {
+                expect(alarm.get('threshold')).toBe(10);
+            });
         });
     });
 });
