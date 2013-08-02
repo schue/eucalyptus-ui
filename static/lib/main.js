@@ -27,6 +27,7 @@ require.config({
         'domReady' : '../lib/domReady',
         'jasmine': '../lib/test/jasmine',
         'jasmine-html': '../lib/test/jasmine-html',
+        'spec' : '../lib/test/spec'
         },
         shim: {
                 underscore : {
@@ -76,6 +77,8 @@ $.cleanData = function( elems ) {
     oldClean.apply(this, arguments);
 };
 
-require(['../lib/test/main.js'], function(jasmineEnv) {
-    console.log('JASMINE', jasmineEnv);
-});
+if (localStorage.getItem('__DO_JASMINE_TESTS__')) {
+    require(['../lib/test/main.js'], function(jasmineEnv) {
+        console.log('JASMINE', jasmineEnv);
+    });
+}

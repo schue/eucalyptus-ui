@@ -1,6 +1,6 @@
 define(['app'], function(app) {
-  return describe('CreateAlarm :: Initial create alarm test', function() {
-      it('should create an alarm', function() {
+  return describe('Create scaling group :: sets default features', function() {
+      it('should create a scaling group', function() {
           waitsFor(function() {
               return $('.resources-nav > li:nth-child(3) > a').size() > 0;
           });
@@ -45,22 +45,6 @@ define(['app'], function(app) {
               $('#new-scaling-group div[data-tooltip="create_scaling_group_memb_az_tip"] select').val($('#new-scaling-group div[data-tooltip="create_scaling_group_memb_az_tip"] select option:eq(1)').attr('value')).trigger('change');
               $('#new-scaling-group div[data-tooltip="create_scaling_group_memb_az_tip"] .icon_add').click();
               $('#new-scaling-group button#nextButton').click();
-          });
-
-          waits(500);
-
-          runs(function() {
-              $('a[data-on-click="createAlarm"]').click();
-          });
-
-          waits(1000);
-
-          runs(function() {
-              $('input#alarm-name').val('test alarm').trigger('change');
-              $('select#alarm-metric').val('AWS/AutoScaling - Group desired capacity').trigger('change');
-              $('select#alarm-dimension:visible').val('ThisScalingGroupName').trigger('change');
-              $('select#alarm-statistic').val('Average').trigger('change');
-              $('select#alarm-comparison').val('GreaterThanThreshold').trigger('change');
           });
       });
   });

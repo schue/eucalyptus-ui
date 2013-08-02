@@ -15,14 +15,19 @@ function(jasmine){
 
     var specs = [];
 
-    specs.push('../lib/test/spec/spec1');
-    specs.push('../lib/test/spec/createalarm');
+    specs.push('spec/create_scalinggrp');
+    specs.push('spec/create_alarm');
 
     $(function() {
+        $('body').append('<div id="HTMLReporter"><a href="javascript:runTests()">Run tests</a></div>');
+    });
+
+    runTests = function() {
+        $('#HTMLReporter').remove();
         require(specs, function(){
             execJasmine();
         });
-    });
+    }
 
     function execJasmine() {
         jasmineEnv.execute();
