@@ -2,6 +2,7 @@ define(['app', 'models/scalinggrp'], function(app, ScalingGroup) {
     return describe('CreateAlarm :: Initial create alarm test', function() {
         var ALARM_NAME = '__TEST_ALARM__';
         var fetchWorker;
+        var alarm;
 
         afterEach(function() {
             var alarm = app.data.alarms.findWhere({name: ALARM_NAME});
@@ -26,7 +27,9 @@ define(['app', 'models/scalinggrp'], function(app, ScalingGroup) {
                 $('input#alarm-measurement').val(2).trigger('change');
                 $('button#button-dialog-createalarm-save').click();
             });
+        });
 
+        it('should see the alarm come back', function() {
             runs(function() {
                 fetchWorker = setInterval(function() {
                     console.log('Check for alarm');
@@ -37,17 +40,35 @@ define(['app', 'models/scalinggrp'], function(app, ScalingGroup) {
             waitsFor(function() {
                 return app.data.alarms.findWhere({name: ALARM_NAME}) != null;
             }, 'An alarm should be created', 60000);
-
+            
             runs(function() {
                 clearInterval(fetchWorker);
-                var alarm = app.data.alarms.findWhere({name: ALARM_NAME});
-                expect(alarm.get('namespace')).toBe('AWS/AutoScaling');
-                expect(alarm.get('metric')).toBe('GroupDesiredCapacity');
-                expect(alarm.get('comparison')).toBe('>');
-                expect(alarm.get('evaluation_periods')).toBe(2);
-                expect(alarm.get('period')).toBe(60);
-                expect(alarm.get('threshold')).toBe(10);
+                alarm = app.data.alarms.findWhere({name: ALARM_NAME});
             });
+        });
+
+        it('should have a matching namespace', function() {
+            expect(alarm.get('namespace')).toBe('AWS/AutoScaling');
+        });
+
+        it('should have a matching metric', function() {
+            expect(alarm.get('metric')).toBe('GroupDesiredCapacity');
+        });
+
+        it('should have a matching comparison', function() {
+            expect(alarm.get('comparison')).toBe('>');
+        });
+
+        it('should have a matching evaluation period', function() {
+            expect(alarm.get('evaluation_periods')).toBe(2);
+        });
+
+        it('should have a matching period', function() {
+            expect(alarm.get('period')).toBe(60);
+        });
+
+        it('should have a matching threshold', function() {
+            expect(alarm.get('threshold')).toBe(10);
         });
     });
 });
