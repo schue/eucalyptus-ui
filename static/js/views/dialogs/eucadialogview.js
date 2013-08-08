@@ -32,7 +32,10 @@ define([
                 // don't add hide: 'fade' here b/c it causes an issue with positioning the dialog next to another dialog
                 resizable: false,
                 closeOnEscape : true,
-                position: { my: 'center', at: 'center', of: window, collision: 'none'},
+//                position: { my: 'center', at: 'center', of: window, collision: 'none'},
+//                position: { my: 'center', at: 'center', of: window, collision: 'none'},
+                position: 'middle',
+                center: true,
                 open: function(event, ui) {
                   // this is super hacky. Trying to set focus here seems to be not late enough
                   // so focus is actually on the first element by default, often a tab.
@@ -40,7 +43,7 @@ define([
                   setTimeout(function() {
                       var input_el = self.$el.parent().find('.focus-here');
                       input_el.focus();
-                    }, 500);
+                  }, 500);
                 },
                 close: function(event, ui) {
                 }
